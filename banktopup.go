@@ -241,7 +241,7 @@ func (c *Client) Summary(param SummaryParam) (*SummaryResponse, error) {
 	param.AccountNumber = c.accountNumber
 	param.PIN = c.pin
 
-	req, _ := http.NewRequest("POST", EndPoint+"/api/v1/scb/transactions", marshalJSON(param))
+	req, _ := http.NewRequest("POST", EndPoint+"/api/v1/scb/summary", marshalJSON(param))
 	req.Header.Add("x-auth-license", c.license)
 	req.Header.Add("Content-Type", "application/json")
 	res, err := c.Do(req)
