@@ -170,6 +170,55 @@ func (c *Client) GetTransactions(param GetTransactionsParam) (*GetTransactionsRe
 }
 
 type (
+	TransferParam struct {
+		AccountTo string  `json:"account_to"`
+		BankCode  string  `json:"bank_code"`
+		Amount    float64 `json:"amount"`
+
+		// optional
+		DeviceID      string `json:"deviceid,omitempty"`
+		AccountNumber string `json:"account_no,omitempty"`
+		PIN           string `json:"pin,omitempty"`
+	}
+	TransferResponse struct {
+		Error struct {
+			Code  int    `json:"code"`
+			MsgTH string `json:"msg_th"`
+		} `json:"error"`
+		Result struct {
+			TransactionID       string  `json:"transactionId"`
+			TransactionDateTime string  `json:"transactionDateTime"`
+			RemainingBalance    float64 `json:"remainingBalance"`
+			AdditionalMetaData  struct {
+				PaymentInfo []struct {
+					QRString string `json:"QRstring"`
+				} `json:"paymentInfo"`
+			} `json:"additionalMetaData"`
+		} `json:"result"`
+	}
+)
+
+func (c *Client) Transfer(param TransferParam) (*TransferResponse, error) {
+	param.DeviceID = c.deviceID
+	param.AccountNumber = c.accountNumber
+	param.PIN = c.pin
+
+	req, _ := http.NewRequest("POST", EndPoint+"/api/v1/scb/transfer", marshalJSON(param))
+	req.Header.Add("x-auth-license", c.license)
+	req.Header.Add("Content-Type", "application/json")
+	res, err := c.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	var response TransferResponse
+	if err := parseResponse(res, &response); err != nil {
+		return nil, err
+	}
+	return &response, nil
+}
+
+type (
 	SummaryParam struct {
 		// optional
 		DeviceID      string `json:"deviceid,omitempty"`
