@@ -3,6 +3,7 @@ package banktopup
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -73,6 +74,9 @@ func (c *Client) Register(param RegisterParam) (*RegisterResponse, error) {
 	if err := parseResponse(res, &response); err != nil {
 		return nil, err
 	}
+	if response.Error.MsgTH != "สำเร็จ" {
+		return nil, errors.New(response.Error.MsgTH)
+	}
 	return &response, nil
 }
 
@@ -104,6 +108,9 @@ func (c *Client) RegisterOTP(param RegisterOTPParam) (*RegisterOTPResponse, erro
 	var response RegisterOTPResponse
 	if err := parseResponse(res, &response); err != nil {
 		return nil, err
+	}
+	if response.Error.MsgTH != "สำเร็จ" {
+		return nil, errors.New(response.Error.MsgTH)
 	}
 	return &response, nil
 }
@@ -168,6 +175,9 @@ func (c *Client) GetTransactions(param GetTransactionsParam) (*GetTransactionsRe
 	if err := parseResponse(res, &response); err != nil {
 		return nil, err
 	}
+	if response.Error.MsgTH != "สำเร็จ" {
+		return nil, errors.New(response.Error.MsgTH)
+	}
 	return &response, nil
 }
 
@@ -217,6 +227,9 @@ func (c *Client) Transfer(param TransferParam) (*TransferResponse, error) {
 	if err := parseResponse(res, &response); err != nil {
 		return nil, err
 	}
+	if response.Error.MsgTH != "สำเร็จ" {
+		return nil, errors.New(response.Error.MsgTH)
+	}
 	return &response, nil
 }
 
@@ -254,6 +267,9 @@ func (c *Client) Summary(param SummaryParam) (*SummaryResponse, error) {
 	var response SummaryResponse
 	if err := parseResponse(res, &response); err != nil {
 		return nil, err
+	}
+	if response.Error.MsgTH != "สำเร็จ" {
+		return nil, errors.New(response.Error.MsgTH)
 	}
 	return &response, nil
 }
