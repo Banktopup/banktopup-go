@@ -14,7 +14,7 @@ const (
 
 type (
 	Client struct {
-		*http.Client
+		client *http.Client
 
 		deviceID      string
 		accountNumber string
@@ -25,6 +25,8 @@ type (
 
 func NewClient(deviceID, accountNumber, pin, license string) *Client {
 	return &Client{
+		client: http.DefaultClient,
+
 		deviceID:      deviceID,
 		accountNumber: accountNumber,
 		pin:           pin,
@@ -62,7 +64,7 @@ func (c *Client) Register(param RegisterParam) (*RegisterResponse, error) {
 	req, _ := http.NewRequest("POST", EndPoint+"/api/v1/scb/register", marshalJSON(param))
 	req.Header.Add("x-auth-license", c.license)
 	req.Header.Add("Content-Type", "application/json")
-	res, err := c.Do(req)
+	res, err := c.client.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -94,7 +96,7 @@ func (c *Client) RegisterOTP(param RegisterOTPParam) (*RegisterOTPResponse, erro
 	req, _ := http.NewRequest("POST", EndPoint+"/api/v1/scb/register/"+c.accountNumber, marshalJSON(param))
 	req.Header.Add("x-auth-license", c.license)
 	req.Header.Add("Content-Type", "application/json")
-	res, err := c.Do(req)
+	res, err := c.client.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -157,7 +159,7 @@ func (c *Client) GetTransactions(param GetTransactionsParam) (*GetTransactionsRe
 	req, _ := http.NewRequest("POST", EndPoint+"/api/v1/scb/transactions", marshalJSON(param))
 	req.Header.Add("x-auth-license", c.license)
 	req.Header.Add("Content-Type", "application/json")
-	res, err := c.Do(req)
+	res, err := c.client.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -206,7 +208,7 @@ func (c *Client) Transfer(param TransferParam) (*TransferResponse, error) {
 	req, _ := http.NewRequest("POST", EndPoint+"/api/v1/scb/transfer", marshalJSON(param))
 	req.Header.Add("x-auth-license", c.license)
 	req.Header.Add("Content-Type", "application/json")
-	res, err := c.Do(req)
+	res, err := c.client.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -244,7 +246,7 @@ func (c *Client) Summary(param SummaryParam) (*SummaryResponse, error) {
 	req, _ := http.NewRequest("POST", EndPoint+"/api/v1/scb/summary", marshalJSON(param))
 	req.Header.Add("x-auth-license", c.license)
 	req.Header.Add("Content-Type", "application/json")
-	res, err := c.Do(req)
+	res, err := c.client.Do(req)
 	if err != nil {
 		return nil, err
 	}
