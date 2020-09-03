@@ -134,7 +134,7 @@ type (
 		Result struct {
 			AccountNo      string `json:"account_no"`
 			EndOfListFlag  string `json:"endOfListFlag"`
-			NextPageNumber int    `json:"nextPageNumber"`
+			NextPageNumber string `json:"nextPageNumber"`
 			PageSize       int    `json:"pageSize"`
 			TxnList        []struct {
 				Annotation       string  `json:"annotation"`
