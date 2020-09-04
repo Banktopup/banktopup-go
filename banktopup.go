@@ -97,7 +97,7 @@ type (
 )
 
 func (c *Client) RegisterOTP(param RegisterOTPParam) (*RegisterOTPResponse, error) {
-	req, _ := http.NewRequest("POST", EndPoint+"/api/v1/scb/register/"+c.accountNumber, marshalJSON(param))
+	req, _ := http.NewRequest("POST", EndPoint+"/api/v1/scb/register/"+c.deviceID, marshalJSON(param))
 	req.Header.Add("x-auth-license", c.license)
 	req.Header.Add("Content-Type", "application/json")
 	res, err := c.client.Do(req)
