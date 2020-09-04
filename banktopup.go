@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
-	"io/ioutil"
 	"net/http"
 )
 
@@ -276,11 +275,7 @@ func (c *Client) Summary(param SummaryParam) (*SummaryResponse, error) {
 
 func parseResponse(res *http.Response, ret interface{}) error {
 	defer res.Body.Close()
-	buff, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		return err
-	}
-	return json.Unmarshal(buff, &ret)
+	return json.NewDecoder(res.Body).Decode(&ret)
 }
 
 func marshalJSON(data interface{}) io.Reader {
