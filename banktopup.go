@@ -295,9 +295,9 @@ type (
 				Description string `json:"description"`
 			} `json:"status"`
 			Data struct {
-				Amount    int    `json:"amount"`
-				Function  string `json:"function"`
-				ScanToken string `json:"scanToken"`
+				Amount    float64 `json:"amount"`
+				Function  string  `json:"function"`
+				ScanToken string  `json:"scanToken"`
 				PullSlip  struct {
 					DateTime time.Time `json:"dateTime"`
 					TransRef string    `json:"transRef"`
