@@ -6,6 +6,7 @@ import (
 	"errors"
 	"io"
 	"net/http"
+	"time"
 )
 
 const (
@@ -264,6 +265,80 @@ func (c *Client) Summary(param SummaryParam) (*SummaryResponse, error) {
 	}
 
 	var response SummaryResponse
+	if err := parseResponse(res, &response); err != nil {
+		return nil, err
+	}
+	if response.Error.MsgTH != "สำเร็จ" {
+		return nil, errors.New(response.Error.MsgTH)
+	}
+	return &response, nil
+}
+
+type (
+	BillScanParam struct {
+		// optional
+		DeviceID      string `json:"deviceid,omitempty"`
+		AccountNumber string `json:"account_no,omitempty"`
+		PIN           string `json:"pin,omitempty"`
+		BarCode       string `json:"barcode"`
+	}
+	BillScanResponse struct {
+		Error struct {
+			Code  int         `json:"code"`
+			Data  interface{} `json:"data"`
+			MsgTH string      `json:"msg_th"`
+		} `json:"error"`
+		Result struct {
+			Status struct {
+				Code        int    `json:"code"`
+				Header      string `json:"header"`
+				Description string `json:"description"`
+			} `json:"status"`
+			Data struct {
+				Amount    int    `json:"amount"`
+				Function  string `json:"function"`
+				ScanToken string `json:"scanToken"`
+				PullSlip  struct {
+					DateTime time.Time `json:"dateTime"`
+					TransRef string    `json:"transRef"`
+					Sender   struct {
+						BankLogo      string `json:"bankLogo"`
+						Name          string `json:"name"`
+						AccountType   string `json:"accountType"`
+						AccountNumber string `json:"accountNumber"`
+					} `json:"sender"`
+					Receiver struct {
+						BankLogo      string      `json:"bankLogo"`
+						Name          string      `json:"name"`
+						AccountType   string      `json:"accountType"`
+						AccountNumber string      `json:"accountNumber"`
+						ProxyType     interface{} `json:"proxyType"`
+						ProxyNumber   interface{} `json:"proxyNumber"`
+					} `json:"receiver"`
+					Ref1     string      `json:"ref1"`
+					Ref2     string      `json:"ref2"`
+					Ref3     interface{} `json:"ref3"`
+					Function string      `json:"function"`
+				} `json:"pullSlip"`
+			} `json:"data"`
+		} `json:"result"`
+	}
+)
+
+func (c *Client) BillScan(param BillScanParam) (*BillScanResponse, error) {
+	param.DeviceID = c.deviceID
+	param.AccountNumber = c.accountNumber
+	param.PIN = c.pin
+
+	req, _ := http.NewRequest("POST", EndPoint+"/api/v1/scb/billscan", marshalJSON(param))
+	req.Header.Add("x-auth-license", c.license)
+	req.Header.Add("Content-Type", "application/json")
+	res, err := c.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	var response BillScanResponse
 	if err := parseResponse(res, &response); err != nil {
 		return nil, err
 	}
