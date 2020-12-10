@@ -115,6 +115,46 @@ func (c *Client) RegisterOTP(param RegisterOTPParam) (*RegisterOTPResponse, erro
 }
 
 type (
+	CheckDeviceParam struct {
+		// optional
+		DeviceID string `json:"deviceid,omitempty"`
+	}
+	CheckDeviceResponse struct {
+		Error struct {
+			Code  int    `json:"code"`
+			MsgTH string `json:"msg_th"`
+		} `json:"error"`
+		Result struct {
+			Data struct {
+				NameTH     string `json:"nameTH"`
+				LastNameTH string `json:"lastNameTH"`
+			} `json:"data"`
+		} `json:"result"`
+	}
+)
+
+func (c *Client) CheckDevice(param CheckDeviceParam) (*CheckDeviceResponse, error) {
+	param.DeviceID = c.deviceID
+
+	req, _ := http.NewRequest("POST", EndPoint+"/api/v1/scb/check_device", marshalJSON(param))
+	req.Header.Add("x-auth-license", c.license)
+	req.Header.Add("Content-Type", "application/json")
+	res, err := c.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	var response CheckDeviceResponse
+	if err := parseResponse(res, &response); err != nil {
+		return nil, err
+	}
+	if response.Error.MsgTH != "สำเร็จ" {
+		return nil, errors.New(response.Error.MsgTH)
+	}
+	return &response, nil
+}
+
+type (
 	GetTransactionsParam struct {
 		PreviousDay int `json:"previous_day"`
 		PageNumber  int `json:"page_number"`
