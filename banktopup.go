@@ -125,7 +125,8 @@ type (
 			MsgTH string `json:"msg_th"`
 		} `json:"error"`
 		Result struct {
-			Data struct {
+			Status bool `json:"status"`
+			Data   struct {
 				NameTH     string `json:"nameTH"`
 				LastNameTH string `json:"lastNameTH"`
 			} `json:"data"`
