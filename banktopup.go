@@ -6,7 +6,6 @@ import (
 	"errors"
 	"io"
 	"net/http"
-	"time"
 )
 
 const (
@@ -321,7 +320,8 @@ type (
 		DeviceID      string `json:"deviceid,omitempty"`
 		AccountNumber string `json:"account_no,omitempty"`
 		PIN           string `json:"pin,omitempty"`
-		BarCode       string `json:"barcode"`
+
+		BarCode string `json:"barcode"`
 	}
 	BillScanResponse struct {
 		Error struct {
@@ -340,8 +340,8 @@ type (
 				Function  string  `json:"function"`
 				ScanToken string  `json:"scanToken"`
 				PullSlip  struct {
-					DateTime time.Time `json:"dateTime"`
-					TransRef string    `json:"transRef"`
+					DateTime string `json:"dateTime"`
+					TransRef string `json:"transRef"`
 					Sender   struct {
 						BankLogo      string `json:"bankLogo"`
 						Name          string `json:"name"`
@@ -356,8 +356,8 @@ type (
 						ProxyType     interface{} `json:"proxyType"`
 						ProxyNumber   interface{} `json:"proxyNumber"`
 					} `json:"receiver"`
-					Ref1     string      `json:"ref1"`
-					Ref2     string      `json:"ref2"`
+					Ref1     interface{} `json:"ref1"`
+					Ref2     interface{} `json:"ref2"`
 					Ref3     interface{} `json:"ref3"`
 					Function string      `json:"function"`
 				} `json:"pullSlip"`
