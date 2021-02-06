@@ -222,6 +222,57 @@ func (c *Client) GetTransactions(param GetTransactionsParam) (*GetTransactionsRe
 }
 
 type (
+	VerifyAccountParam struct {
+		AccountTo string  `json:"account_to"`
+		BankCode  string  `json:"bank_code"`
+		Amount    float64 `json:"amount"`
+
+		// optional
+		DeviceID      string `json:"deviceid,omitempty"`
+		AccountNumber string `json:"account_no,omitempty"`
+		PIN           string `json:"pin,omitempty"`
+	}
+	VerifyAccountResponse struct {
+		Error struct {
+			Code  int    `json:"code"`
+			MsgTH string `json:"msg_th"`
+		} `json:"error"`
+		Result struct {
+			AccountToName        string `json:"accountToName"`
+			AccountToDisplayName string `json:"accountToDisplayName"`
+			TransferType         string `json:"transferType"`
+			TerminalNo           string `json:"terminalNo"`
+			Sequence             string `json:"sequence"`
+			TransactionToken     string `json:"transactionToken"`
+			BankRouting          string `json:"bankRouting"`
+		} `json:"result"`
+	}
+)
+
+func (c *Client) VerifyAccount(param VerifyAccountParam) (*VerifyAccountResponse, error) {
+	param.DeviceID = c.deviceID
+	param.AccountNumber = c.accountNumber
+	param.PIN = c.pin
+
+	req, _ := http.NewRequest("POST", EndPoint+"/api/v1/scb/verification", marshalJSON(param))
+	req.Header.Add("x-auth-license", c.license)
+	req.Header.Add("Content-Type", "application/json")
+	res, err := c.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	var response VerifyAccountResponse
+	if err := parseResponse(res, &response); err != nil {
+		return nil, err
+	}
+	if response.Error.MsgTH != "สำเร็จ" {
+		return nil, errors.New(response.Error.MsgTH)
+	}
+	return &response, nil
+}
+
+type (
 	TransferParam struct {
 		AccountTo string  `json:"account_to"`
 		BankCode  string  `json:"bank_code"`
